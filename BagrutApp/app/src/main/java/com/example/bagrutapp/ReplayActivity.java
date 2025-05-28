@@ -5,9 +5,8 @@ import android.os.Handler;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 
-public class ReplayActivity extends AppCompatActivity {
+public class ReplayActivity extends BaseActivity {
 
     private Button[][] buttons = new Button[3][3];
     private TextView tvReplayStatus;

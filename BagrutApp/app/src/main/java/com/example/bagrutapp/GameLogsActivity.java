@@ -3,11 +3,10 @@ package com.example.bagrutapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ListView;
-import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameLogsActivity extends AppCompatActivity {
+public class GameLogsActivity extends BaseActivity {
 
     private ListView listViewGames;
     private List<GameSummary> gameList;

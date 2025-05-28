@@ -4,9 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import androidx.appcompat.app.AppCompatActivity;
 
-public class PlayerSetupActivity extends AppCompatActivity {
+public class PlayerSetupActivity extends BaseActivity {
 
     private EditText etPlayer1, etPlayer2;
     private Button btnEnter, btnSwitch, btnExit;

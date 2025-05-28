@@ -7,9 +7,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private Button btnTwoPlayers, btnAgainstAI, btnGameLogs;
 
@@ -51,29 +50,5 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 });
         builder.create().show();
-    }
-
-    private boolean isMusicPlaying = false;
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_toggle_music) {
-            if (isMusicPlaying) {
-                stopService(new Intent(this, MusicService.class));
-                item.setIcon(R.drawable.baseline_volume_off_24);
-            } else {
-                startService(new Intent(this, MusicService.class));
-                item.setIcon(R.drawable.baseline_volume_up_24);
-            }
-            isMusicPlaying = !isMusicPlaying;
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }
