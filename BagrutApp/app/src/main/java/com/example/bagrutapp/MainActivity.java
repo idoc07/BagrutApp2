@@ -1,17 +1,15 @@
 package com.example.bagrutapp;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btnTwoPlayers, btnAgainstAI, btnSavedGames;
+    private Button btnTwoPlayers, btnAgainstAI, btnGameLogs;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -21,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnTwoPlayers = findViewById(R.id.btn_two_players);
         btnAgainstAI = findViewById(R.id.btn_against_ai);
-        btnSavedGames = findViewById(R.id.btn_saved_games);
+        btnGameLogs = findViewById(R.id.btn_game_logs);
 
         btnTwoPlayers.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, PlayerSetupActivity.class);
@@ -30,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
         btnAgainstAI.setOnClickListener(v -> showDifficultyDialog());
 
-        btnSavedGames.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, SavedGamesActivity.class);
+        btnGameLogs.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, GameLogsActivity.class);
             startActivity(intent);
         });
     }

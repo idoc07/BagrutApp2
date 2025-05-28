@@ -39,11 +39,11 @@
         android:weightSum="2">
 
         <Button
-            android:id="@+id/btn_saved_games"
+            android:id="@+id/btn_game_logs"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Saved Games"
+            android:text="Game Logs"
             android:layout_marginEnd="8dp"/>
 
     </LinearLayout>

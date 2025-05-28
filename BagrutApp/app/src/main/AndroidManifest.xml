@@ -13,7 +13,7 @@
         android:theme="@style/Theme.BagrutApp"
         tools:targetApi="31">
         <activity
-            android:name=".SavedGamesActivity"
+            android:name=".GameLogsActivity"
             android:exported="false" />
         <activity
             android:name=".ReplayActivity"

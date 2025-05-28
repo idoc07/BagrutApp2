@@ -2,14 +2,12 @@ package com.example.bagrutapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SavedGamesActivity extends AppCompatActivity {
+public class GameLogsActivity extends AppCompatActivity {
 
     private ListView listViewGames;
     private List<GameSummary> gameList;
@@ -17,7 +15,7 @@ public class SavedGamesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_saved_games);
+        setContentView(R.layout.activity_game_logs);
 
         listViewGames = findViewById(R.id.listViewGames);
 
@@ -34,7 +32,7 @@ public class SavedGamesActivity extends AppCompatActivity {
 
         listViewGames.setOnItemClickListener((parent, view, position, id) -> {
             GameSummary selected = gameList.get(position);
-            Intent intent = new Intent(SavedGamesActivity.this, ReplayActivity.class);
+            Intent intent = new Intent(GameLogsActivity.this, ReplayActivity.class);
             intent.putExtra("player1", selected.getPlayer1());
             intent.putExtra("player2", selected.getPlayer2());
             intent.putExtra("winner", selected.getWinner());
