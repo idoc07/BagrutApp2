@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btnTwoPlayers, btnAgainstAI, btnGameLogs, btnSavedGames;
+    private Button btnTwoPlayers, btnAgainstAI, btnSavedGames;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
 
         btnTwoPlayers = findViewById(R.id.btn_two_players);
         btnAgainstAI = findViewById(R.id.btn_against_ai);
-        btnGameLogs = findViewById(R.id.btn_game_logs);
         btnSavedGames = findViewById(R.id.btn_saved_games);
 
         btnTwoPlayers.setOnClickListener(v -> {
@@ -30,11 +29,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnAgainstAI.setOnClickListener(v -> showDifficultyDialog());
-
-        btnGameLogs.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, GameLogsActivity.class);
-            startActivity(intent);
-        });
 
         btnSavedGames.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SavedGamesActivity.class);

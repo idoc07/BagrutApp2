@@ -19,9 +19,6 @@
             android:name=".ReplayActivity"
             android:exported="false" />
         <activity
-            android:name=".GameLogsActivity"
-            android:exported="false" />
-        <activity
             android:name=".EndScreenActivity"
             android:theme="@style/Theme.BagrutApp.Dialog" />
         <activity
