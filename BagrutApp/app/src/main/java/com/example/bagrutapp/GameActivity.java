@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.Random;
@@ -24,7 +25,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private int elapsedSeconds = 0;
     private Handler timerHandler = new Handler();
     private Runnable timerRunnable;
-
     private TextView textViewTurn;
 
     @Override
@@ -41,6 +41,13 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         isAI = getIntent().getBooleanExtra("isAI", false);
         difficulty = getIntent().getStringExtra("difficulty");
+
+        if (difficulty == null || difficulty.trim().isEmpty()) {
+            difficulty = "Easy"; // ברירת מחדל
+        }
+
+        // שורת בדיקה זמנית (אפשר למחוק אחר כך)
+        Toast.makeText(this, "Difficulty: " + difficulty, Toast.LENGTH_SHORT).show();
 
         player1Name = getIntent().getStringExtra("player1");
         if (player1Name == null || player1Name.trim().isEmpty()) {
@@ -64,7 +71,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         tvTimer = findViewById(R.id.tv_timer);
-
         timerRunnable = new Runnable() {
             @Override
             public void run() {
@@ -251,6 +257,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         intent.putStringArrayListExtra("moves", moves);
         timerHandler.removeCallbacks(timerRunnable);
         intent.putExtra("duration", formatDuration(elapsedSeconds));
+        intent.putExtra("difficulty", difficulty);
         startActivity(intent);
     }
 
@@ -275,10 +282,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         updateTurnText();
         if (isAI && !player1Turn) aiMove();
     }
+
     private String formatDuration(int seconds) {
         int minutes = seconds / 60;
         int secs = seconds % 60;
         return String.format("%02d:%02d", minutes, secs);
     }
-
 }

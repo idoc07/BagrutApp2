@@ -34,6 +34,7 @@ public class EndScreenActivity extends AppCompatActivity {
         ArrayList<String> moves = getIntent().getStringArrayListExtra("moves");
         long duration = getIntent().getLongExtra("duration", 0); // קיבלנו מ-GameActivity
         String durationStr = getIntent().getStringExtra("duration");
+        String difficulty = getIntent().getStringExtra("difficulty"); // קריטי!
 
         // מראה את שם המנצח
         tvWinner.setText("Winner: " + winner);
@@ -44,7 +45,7 @@ public class EndScreenActivity extends AppCompatActivity {
         // יצירת אובייקט GameSummary
         GameSummary summary = new GameSummary(player1, player2, winner, durationStr, String.join(",", moves));
 
-// שמירה ב-SQLite
+        // שמירה ב-SQLite
         GameSummaryDatabaseHelper dbHelper = new GameSummaryDatabaseHelper(this);
         dbHelper.insertGameSummary(summary);
 
@@ -54,6 +55,7 @@ public class EndScreenActivity extends AppCompatActivity {
             intent.putExtra("player1", player1);
             intent.putExtra("player2", player2);
             intent.putExtra("isAI", isAI);
+            intent.putExtra("difficulty", difficulty);
             startActivity(intent);
             finish();
         });
