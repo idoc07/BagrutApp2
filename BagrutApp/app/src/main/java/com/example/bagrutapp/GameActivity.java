@@ -6,11 +6,11 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class GameActivity extends BaseActivity implements View.OnClickListener {
+public class GameActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button[][] buttons = new Button[3][3];
     private boolean player1Turn = true;
@@ -25,11 +25,14 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
     private Handler timerHandler = new Handler();
     private Runnable timerRunnable;
     private TextView textViewTurn;
+    private boolean isAITurn = false;
+    private String[][] virtualBoard = new String[3][3]; // לוח וירטואלי ל-minimax
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
         Button btnReset = findViewById(R.id.btn_reset);
         Button btnExit = findViewById(R.id.btn_exit);
 
@@ -40,13 +43,6 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
 
         isAI = getIntent().getBooleanExtra("isAI", false);
         difficulty = getIntent().getStringExtra("difficulty");
-
-        if (difficulty == null || difficulty.trim().isEmpty()) {
-            difficulty = "Easy"; // ברירת מחדל
-        }
-
-        // שורת בדיקה זמנית (אפשר למחוק אחר כך)
-        Toast.makeText(this, "Difficulty: " + difficulty, Toast.LENGTH_SHORT).show();
 
         player1Name = getIntent().getStringExtra("player1");
         if (player1Name == null || player1Name.trim().isEmpty()) {
@@ -66,10 +62,12 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
                 int resID = getResources().getIdentifier(buttonID, "id", getPackageName());
                 buttons[i][j] = findViewById(resID);
                 buttons[i][j].setOnClickListener(this);
+                virtualBoard[i][j] = ""; // אתחול לוח וירטואלי
             }
         }
 
         tvTimer = findViewById(R.id.tv_timer);
+
         timerRunnable = new Runnable() {
             @Override
             public void run() {
@@ -81,6 +79,7 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
                 timerHandler.postDelayed(this, 1000);
             }
         };
+
         timerHandler.postDelayed(timerRunnable, 1000);
 
         updateTurnText();
@@ -88,15 +87,22 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        if (isAITurn) return;
+
         Button clickedButton = (Button) v;
         if (!clickedButton.getText().toString().equals("")) return;
 
-        if (player1Turn) {
-            clickedButton.setText("X");
-            moves.add("X" + getButtonIndex(clickedButton));
-        } else {
-            clickedButton.setText("O");
-            moves.add("O" + getButtonIndex(clickedButton));
+        String symbol = player1Turn ? "X" : "O";
+        clickedButton.setText(symbol);
+
+        // עדכון לוח וירטואלי
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (buttons[i][j] == clickedButton) {
+                    virtualBoard[i][j] = symbol;
+                    moves.add(symbol + i + j);
+                }
+            }
         }
 
         roundCount++;
@@ -108,60 +114,92 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
         } else {
             player1Turn = !player1Turn;
             updateTurnText();
-            if (isAI && !player1Turn) aiMove();
+
+            if (isAI && !player1Turn) {
+                aiMove();
+            }
         }
     }
 
     private void aiMove() {
-        if (player1Turn) return;
+        isAITurn = true;
+        setButtonsEnabled(false);
 
-        new Handler().postDelayed(() -> {
-            int i, j;
-            Random rand = new Random();
-
-            if ("Easy".equalsIgnoreCase(difficulty)) {
-                do {
-                    i = rand.nextInt(3);
-                    j = rand.nextInt(3);
-                } while (!buttons[i][j].getText().toString().equals(""));
-
-            } else if ("Hard".equalsIgnoreCase(difficulty)) {
-                int[] move = getBestMove();
-                i = move[0];
-                j = move[1];
-
-            } else if ("Medium".equalsIgnoreCase(difficulty)) {
-                if (rand.nextBoolean()) {
-                    int[] move = getBestMove();
-                    i = move[0];
-                    j = move[1];
-                } else {
-                    do {
-                        i = rand.nextInt(3);
-                        j = rand.nextInt(3);
-                    } while (!buttons[i][j].getText().toString().equals(""));
-                }
-            } else {
-                do {
-                    i = rand.nextInt(3);
-                    j = rand.nextInt(3);
-                } while (!buttons[i][j].getText().toString().equals(""));
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
-            buttons[i][j].performClick();
-        }, 500);
+            int[] move = getAIMove();
+
+            runOnUiThread(() -> {
+                int i = move[0];
+                int j = move[1];
+                buttons[i][j].setText("O");  // עדכון ישירות
+                virtualBoard[i][j] = "O";    // עדכון ישירות
+                moves.add("O" + i + j);
+
+                roundCount++;
+
+                if (checkForWin()) {
+                    endGame(player2Name);
+                } else if (roundCount == 9) {
+                    endGame("Draw");
+                } else {
+                    player1Turn = true;
+                    updateTurnText();
+                    isAITurn = false;
+                    setButtonsEnabled(true);
+                }
+            });
+        }).start();
+    }
+
+    private int[] getAIMove() {
+        if (difficulty.equals("Easy")) {
+            ArrayList<int[]> emptyCells = getEmptyCells();
+            return emptyCells.get(new Random().nextInt(emptyCells.size()));
+        } else if (difficulty.equals("Medium")) {
+            if (new Random().nextBoolean()) {
+                return getAIMove("Easy");
+            } else {
+                return getBestMove();
+            }
+        } else {
+            return getBestMove();
+        }
+    }
+
+    private int[] getAIMove(String mode) {
+        ArrayList<int[]> emptyCells = getEmptyCells();
+        return emptyCells.get(new Random().nextInt(emptyCells.size()));
+    }
+
+    private ArrayList<int[]> getEmptyCells() {
+        ArrayList<int[]> emptyCells = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (virtualBoard[i][j].equals("")) {
+                    emptyCells.add(new int[]{i, j});
+                }
+            }
+        }
+        return emptyCells;
     }
 
     private int[] getBestMove() {
         int bestScore = Integer.MIN_VALUE;
-        int[] bestMove = new int[2];
+        int[] bestMove = new int[]{-1, -1};
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (buttons[i][j].getText().toString().equals("")) {
-                    buttons[i][j].setText("O");
+                if (virtualBoard[i][j].equals("")) {
+                    virtualBoard[i][j] = "O";
                     int score = minimax(0, false);
-                    buttons[i][j].setText("");
+                    virtualBoard[i][j] = "";
+
                     if (score > bestScore) {
                         bestScore = score;
                         bestMove[0] = i;
@@ -170,11 +208,12 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
                 }
             }
         }
+
         return bestMove;
     }
 
     private int minimax(int depth, boolean isMaximizing) {
-        String result = checkWinnerSymbol();
+        String result = checkWinnerSymbol(virtualBoard);
         if (result != null) {
             if (result.equals("O")) return 10 - depth;
             if (result.equals("X")) return depth - 10;
@@ -185,10 +224,10 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
             int bestScore = Integer.MIN_VALUE;
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
-                    if (buttons[i][j].getText().toString().equals("")) {
-                        buttons[i][j].setText("O");
+                    if (virtualBoard[i][j].equals("")) {
+                        virtualBoard[i][j] = "O";
                         int score = minimax(depth + 1, false);
-                        buttons[i][j].setText("");
+                        virtualBoard[i][j] = "";
                         bestScore = Math.max(score, bestScore);
                     }
                 }
@@ -198,10 +237,10 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
             int bestScore = Integer.MAX_VALUE;
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
-                    if (buttons[i][j].getText().toString().equals("")) {
-                        buttons[i][j].setText("X");
+                    if (virtualBoard[i][j].equals("")) {
+                        virtualBoard[i][j] = "X";
                         int score = minimax(depth + 1, true);
-                        buttons[i][j].setText("");
+                        virtualBoard[i][j] = "";
                         bestScore = Math.min(score, bestScore);
                     }
                 }
@@ -210,40 +249,34 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    private String checkWinnerSymbol() {
-        String[][] field = new String[3][3];
+    private String checkWinnerSymbol(String[][] board) {
         for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                field[i][j] = buttons[i][j].getText().toString();
-            }
+            if (!board[i][0].equals("") && board[i][0].equals(board[i][1]) && board[i][0].equals(board[i][2]))
+                return board[i][0];
+            if (!board[0][i].equals("") && board[0][i].equals(board[1][i]) && board[0][i].equals(board[2][i]))
+                return board[0][i];
         }
 
-        for (int i = 0; i < 3; i++) {
-            if (!field[i][0].equals("") && field[i][0].equals(field[i][1]) && field[i][0].equals(field[i][2]))
-                return field[i][0];
-            if (!field[0][i].equals("") && field[0][i].equals(field[1][i]) && field[0][i].equals(field[2][i]))
-                return field[0][i];
-        }
-
-        if (!field[0][0].equals("") && field[0][0].equals(field[1][1]) && field[0][0].equals(field[2][2]))
-            return field[0][0];
-        if (!field[0][2].equals("") && field[0][2].equals(field[1][1]) && field[0][2].equals(field[2][0]))
-            return field[0][2];
+        if (!board[0][0].equals("") && board[0][0].equals(board[1][1]) && board[0][0].equals(board[2][2]))
+            return board[0][0];
+        if (!board[0][2].equals("") && board[0][2].equals(board[1][1]) && board[0][2].equals(board[2][0]))
+            return board[0][2];
 
         boolean empty = false;
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 3; j++)
-                if (field[i][j].equals("")) empty = true;
+                if (board[i][j].equals("")) empty = true;
 
         return empty ? null : "Draw";
     }
 
-    private void updateTurnText() {
-        textViewTurn.setText((player1Turn ? player1Name : player2Name) + "'s turn");
+    private boolean checkForWin() {
+        String result = checkWinnerSymbol(virtualBoard);
+        return result != null && !result.equals("Draw");
     }
 
-    private boolean checkForWin() {
-        return checkWinnerSymbol() != null && !checkWinnerSymbol().equals("Draw");
+    private void updateTurnText() {
+        textViewTurn.setText((player1Turn ? player1Name : player2Name) + "'s turn");
     }
 
     private void endGame(String winner) {
@@ -260,19 +293,11 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
         startActivity(intent);
     }
 
-    private String getButtonIndex(Button button) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                if (buttons[i][j] == button) return i + "" + j;
-            }
-        }
-        return "";
-    }
-
     private void resetGame() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 buttons[i][j].setText("");
+                virtualBoard[i][j] = "";
             }
         }
         roundCount = 0;
@@ -286,5 +311,21 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
         int minutes = seconds / 60;
         int secs = seconds % 60;
         return String.format("%02d:%02d", minutes, secs);
+    }
+
+    private void setButtonsEnabled(boolean enabled) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (buttons[i][j].getText().toString().equals("")) {
+                    buttons[i][j].setEnabled(enabled);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        timerHandler.removeCallbacks(timerRunnable);
     }
 }
