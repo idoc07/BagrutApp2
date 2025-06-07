@@ -6,11 +6,10 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class GameActivity extends AppCompatActivity implements View.OnClickListener {
+public class GameActivity extends BaseActivity implements View.OnClickListener {
 
     private Button[][] buttons = new Button[3][3];
     private boolean player1Turn = true;
