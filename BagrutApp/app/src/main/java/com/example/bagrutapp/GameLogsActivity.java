@@ -2,6 +2,7 @@ package com.example.bagrutapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ public class GameLogsActivity extends BaseActivity {
 
     private ListView listViewGames;
     private List<GameSummary> gameList;
+    private Button btnBackToMain;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,5 +41,14 @@ public class GameLogsActivity extends BaseActivity {
             intent.putExtra("moves", selected.getMoves()); // נשלח כמחרוזת מופרדת בפסיקים
             startActivity(intent);
         });
+
+        Button btnBackToMain = findViewById(R.id.btn_back_to_main);
+        btnBackToMain.setOnClickListener(v -> {
+            Intent intent = new Intent(GameLogsActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
+
     }
 }
