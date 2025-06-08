@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ListView;
+
+import com.google.android.material.appbar.MaterialToolbar;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +20,9 @@ public class GameLogsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_logs);
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         listViewGames = findViewById(R.id.listViewGames);
 

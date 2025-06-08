@@ -6,6 +6,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.appbar.MaterialToolbar;
+
 public class ReplayActivity extends BaseActivity {
 
     private Button[][] buttons = new Button[3][3];
@@ -20,6 +22,9 @@ public class ReplayActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_replay);
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         tvReplayStatus = findViewById(R.id.tv_replay_status);
 

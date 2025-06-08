@@ -6,6 +6,8 @@
     android:gravity="center"
     android:padding="16dp">
 
+    <include layout="@layout/toolbar_layout" />
+
     <TextView
         android:id="@+id/tv_replay_status"
         android:layout_width="wrap_content"
