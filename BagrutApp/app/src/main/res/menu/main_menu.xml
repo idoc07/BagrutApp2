@@ -1,8 +1,9 @@
-<!-- res/menu/menu_main.xml -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/action_toggle_music"
-        android:icon="@drawable/baseline_volume_up_24"
         android:title="Toggle Music"
-        android:showAsAction="always" />
+        android:icon="@drawable/baseline_volume_off_24"
+        app:showAsAction="always" />
 </menu>
