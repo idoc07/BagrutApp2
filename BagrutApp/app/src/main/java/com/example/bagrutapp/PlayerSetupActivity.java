@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.android.material.appbar.MaterialToolbar;
-
 public class PlayerSetupActivity extends BaseActivity {
 
     private EditText etPlayer1, etPlayer2;
@@ -16,9 +14,6 @@ public class PlayerSetupActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_setup);
-
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         etPlayer1 = findViewById(R.id.et_player1);
         etPlayer2 = findViewById(R.id.et_player2);
