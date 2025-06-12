@@ -18,10 +18,7 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // הגדרת ה־Toolbar כ־ActionBar
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setupToolbar(); // הגדרת הטולבר המשותף
 
         btnTwoPlayers = findViewById(R.id.btn_two_players);
         btnAgainstAI = findViewById(R.id.btn_against_ai);

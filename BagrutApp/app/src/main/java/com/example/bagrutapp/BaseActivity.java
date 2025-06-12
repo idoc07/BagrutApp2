@@ -1,4 +1,3 @@
-// BaseActivity.java
 package com.example.bagrutapp;
 
 import android.app.ActivityManager;
@@ -8,8 +7,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     protected boolean isMusicPlaying = false;
 
@@ -18,16 +18,18 @@ public class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
     }
 
+    protected void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
-
-        // בדיקה בזמן אמת אם ה-Service רץ
         isMusicPlaying = isMusicServiceRunning();
-
-        MenuItem musicItem = menu.findItem(R.id.action_toggle_music);
-        updateMusicIcon(musicItem);
-
+        updateMusicIcon(menu.findItem(R.id.action_toggle_music));
         return true;
     }
 
@@ -47,11 +49,9 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     private void updateMusicIcon(MenuItem item) {
-        if (isMusicPlaying) {
-            item.setIcon(R.drawable.baseline_volume_up_24);
-        } else {
-            item.setIcon(R.drawable.baseline_volume_off_24);
-        }
+        item.setIcon(isMusicPlaying
+                ? R.drawable.baseline_volume_up_24
+                : R.drawable.baseline_volume_off_24);
     }
 
     private boolean isMusicServiceRunning() {
